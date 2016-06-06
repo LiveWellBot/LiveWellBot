@@ -114,7 +114,7 @@ def change_attribute(subject, key, value):
     firebase.patch('/users/' + subject + '/', data={key: value})
 
 
-def handle_text(text, update, current_state=None, chat_id):
+def handle_text(text, update, current_state=None, chat_id=None):
     if current_state == "input_feeling":
         change_attribute(str(chat_id), "state", "input_weight")
         change_attribute(str(chat_id), "feeling", text)
