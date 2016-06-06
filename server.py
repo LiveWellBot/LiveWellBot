@@ -45,7 +45,7 @@ filters = {
 }
 
 
-@app.route('/HOOK', methods=['POST'])
+# @app.route('/HOOK', methods=['POST'])
 def webhook_handler():
     if request.method == "POST":
         # retrieve the message in JSON and then transform it to Telegram object
@@ -68,7 +68,9 @@ def webhook_handler():
 
         if text:
             text_array = text.split()
-            # change_attribute(chat_id, "key", text)
+            print chat_id
+            print text
+            change_attribute(chat_id, "key", text)
             handle_command(text_array[0], update)
         elif photo:
             filter_image(bot, update)
@@ -90,8 +92,8 @@ def set_webhook():
         return "webhook setup failed"
 
 
-# def change_attribute(subject, key, value):
-#     firebase.patch('/users/' + subject + '/', data={key: value})
+def change_attribute(subject, key, value):
+    firebase.patch('/users/' + subject + '/', data={key: value})
 
 
 def handle_command(command, update):
