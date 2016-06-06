@@ -60,8 +60,10 @@ def webhook_handler():
                 value = v.encode('utf8')
                 if key == "state":
                     current_state = value
+            print "THIS IS THE CURRENT STATE"
             print current_state
         except Exception as e:
+            print "FAILURE TO ASSIGN STATE"
             print str(e)
         print update.message
         print update.message.text.encode('utf-8')
