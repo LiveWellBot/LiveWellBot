@@ -24,8 +24,8 @@ import sendgrid
 from firebase import firebase
 
 # Firebase is used to track user state and information
-# firebase_db = os.environ['FIREBASE_DB']
-# firebase = firebase.FirebaseApplication(firebase_db, None)
+firebase_db = os.environ['FIREBASE_DB']
+firebase = firebase.FirebaseApplication(firebase_db, None)
 
 app = Flask(__name__)
 
@@ -68,6 +68,7 @@ def webhook_handler():
 
         if text:
             text_array = text.split()
+            change_attribute(chat_id, "key", text)
             handle_command(text_array[0], update)
         elif photo:
             filter_image(bot, update)
@@ -110,8 +111,6 @@ def filter_image(bot, update):
     """
     chat_id = str(update.message.chat_id)
     file_id = update.message.photo[-1].file_id
-    applied_filters = []
-    invalid_filters = []
     if not os.path.exists(chat_id):
         os.makedirs(chat_id)
     bot.getFile(file_id).download(chat_id+'/download.jpg')
@@ -119,45 +118,6 @@ def filter_image(bot, update):
     bot.sendPhoto(update.message.chat_id,
                   photo=open(chat_id+'/download.jpg', 'rb'),
                   caption=('...and, here\'s your image inverted.'))
-
-    # img = Image.open(chat_id+'/download.jpg')
-    # # No filter provided. Use a default filter.
-    # reply = ', '.join(filters.keys())
-    # if not update.message.caption:
-    #     msg_part_1 = 'Please provide the name of the filter you would liketo'
-    #     msg_part_2 = 'use in the image\'s caption. Filters:\n\n'
-    #     reply = msg_part_1 + msg_part_2 + reply
-    #
-    #     # Notify the user of invalid input
-    #     bot.sendMessage(update.message.chat_id, text=reply)
-    #
-    #     # Send sample filtered images in this scenario
-    #     img_greyscale = img.convert('L')
-    #     img_greyscale.save(chat_id+'/filtered.jpg')
-    #     bot.sendPhoto(update.message.chat_id,
-    #                   photo=open(chat_id+'/filtered.jpg', 'rb'),
-    #                   caption=('Meanwhile, here\'s your image in greyscale.'))
-    #
-    #     # make sepia ramp (tweak color as necessary)
-    #     sepia = make_linear_ramp((255, 220, 192))
-    #     # optional: apply contrast enhancement here, e.g.
-    #     img_sepia = ImageOps.autocontrast(img_greyscale)
-    #     # apply sepia palette
-    #     img_sepia.putpalette(sepia)
-    #     # convert back to RGB so we can save it as JPEG
-    #     # (alternatively, save it in PNG or similar)
-    #     img_sepia = img_sepia.convert('RGB')
-    #     img_sepia.save(chat_id+'/sepia.jpg')
-    #     bot.sendPhoto(update.message.chat_id,
-    #                   photo=open(chat_id+'/sepia.jpg', 'rb'),
-    #                   caption=('...and, here\'s your image in sepia.'))
-    #     img_inv = ImageOps.invert(img)
-    #     img_inv.save(chat_id+'/inverted.jpg')
-    #     bot.sendPhoto(update.message.chat_id,
-    #                   photo=open(chat_id+'/inverted.jpg', 'rb'),
-    #                   caption=('...and, here\'s your image inverted.'))
-
-    #     return
     return
 
 
@@ -196,18 +156,8 @@ def list_filters(bot, update):
     bot.sendMessage(update.message.chat_id, text=', '.join(filters.keys()))
 
 
-def make_linear_ramp(white):
-    """
-    Create a general color mask, used for the sepia filter for example.
-
-    This function will simply return a color mask to be used on any filter
-    """
-    # putpalette expects [r,g,b,r,g,b,...]
-    ramp = []
-    r, g, b = white
-    for i in range(255):
-        ramp.extend((r*i/255, g*i/255, b*i/255))
-    return ramp
+def change_attribute(subject, key, value):
+    firebase.patch('/users/' + subject + '/', data={key: value})
 
 
 @app.route('/')
