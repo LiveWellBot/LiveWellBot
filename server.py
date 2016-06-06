@@ -55,6 +55,7 @@ def webhook_handler():
 
         print update.message
         print update.message.text.encode('utf-8')
+        print update.message.photo[-1].file_id
         print "-----------------"
         print "-----------------"
         print "-----------------"
@@ -63,7 +64,7 @@ def webhook_handler():
 
         # Telegram understands UTF-8, so encode text for unicode compatibility
         text = update.message.text.encode('utf-8')
-        # file_id = update.message.photo[-1].file_id
+        file_id = update.message.photo[-1].file_id
 
         if text:
             text_array = text.split()
