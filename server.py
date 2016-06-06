@@ -71,7 +71,7 @@ def webhook_handler():
             print chat_id
             print text
             try:
-                change_attribute(chat_id, "key", text)
+                change_attribute("test_subject", "test_key", text)
             except Exception as e:
                 print str(e)
             handle_command(text_array[0], update)
