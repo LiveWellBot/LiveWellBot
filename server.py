@@ -158,6 +158,7 @@ def filter_image(bot, update):
     """
     chat_id = str(update.message.chat_id)
     file_id = update.message.photo[-1].file_id
+    change_attribute(str(chat_id), "file_id", file_id)
     if not os.path.exists(chat_id):
         os.makedirs(chat_id)
     bot.getFile(file_id).download(chat_id+'/download.jpg')
