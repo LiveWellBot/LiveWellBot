@@ -53,13 +53,15 @@ def webhook_handler():
         chat_id = update.message.chat.id
 
         current_state = None
-        firebase_dict = firebase.get('/users/' + chat_id, None)
-        for k, v in firebase_dict.iteritems():
-            key = k.encode('utf8')
-            value = v.encode('utf8')
-            if key == "state":
-                current_state = value
-
+        try:
+            firebase_dict = firebase.get('/users/' + chat_id, None)
+            for k, v in firebase_dict.iteritems():
+                key = k.encode('utf8')
+                value = v.encode('utf8')
+                if key == "state":
+                    current_state = value
+        except Exception as e:
+            print str(e)
         print update.message
         print update.message.text.encode('utf-8')
         print update.message.photo
@@ -109,7 +111,7 @@ def change_attribute(subject, key, value):
     firebase.patch('/users/' + subject + '/', data={key: value})
 
 
-def handle_text(text, update, current_state):
+def handle_text(text, update, current_state=None):
     if current_state == "input_feeling":
         help(bot, update)
     elif current_state == "/list_filters":
@@ -178,10 +180,6 @@ def list_filters(bot, update):
     This function will simply show the user all the filters he/she can choose
     """
     bot.sendMessage(update.message.chat_id, text=', '.join(filters.keys()))
-
-
-def change_attribute(subject, key, value):
-    firebase.patch('/users/' + subject + '/', data={key: value})
 
 
 @app.route('/')
