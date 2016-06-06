@@ -81,7 +81,7 @@ def webhook_handler():
             # text_array = text.split()
             print chat_id
             print text
-            handle_text(text, update, current_state)
+            handle_text(text, update, current_state, chat_id)
             # handle_command(text_array[0], update)
         elif photo:
             try:
@@ -114,9 +114,11 @@ def change_attribute(subject, key, value):
     firebase.patch('/users/' + subject + '/', data={key: value})
 
 
-def handle_text(text, update, current_state=None):
+def handle_text(text, update, current_state=None, chat_id):
     if current_state == "input_feeling":
-        help(bot, update)
+        change_attribute(str(chat_id), "state", "input_weight")
+        change_attribute(str(chat_id), "feeling", text)
+        # help(bot, update)
     elif current_state == "/list_filters":
         list_filters(bot, update)
     else:
