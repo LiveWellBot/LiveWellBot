@@ -54,7 +54,7 @@ def webhook_handler():
 
         current_state = None
         try:
-            firebase_dict = firebase.get('/users/' + chat_id, None)
+            firebase_dict = firebase.get('/users/' + str(chat_id), None)
             print firebase_dict
             print current_state
         except Exception as e:
