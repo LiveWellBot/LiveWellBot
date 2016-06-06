@@ -60,6 +60,7 @@ def webhook_handler():
                 value = v.encode('utf8')
                 if key == "state":
                     current_state = value
+            print current_state
         except Exception as e:
             print str(e)
         print update.message
@@ -83,6 +84,7 @@ def webhook_handler():
             # handle_command(text_array[0], update)
         elif photo:
             try:
+                change_attribute(str(chat_id), "chat_id", str(chat_id))
                 change_attribute(str(chat_id), "state", "input_feeling")
             except Exception as e:
                 print str(e)
