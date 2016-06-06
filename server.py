@@ -201,5 +201,5 @@ def make_linear_ramp(white):
 def index():
     return '.'
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     # set_webhook()
