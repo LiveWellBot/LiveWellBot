@@ -73,7 +73,7 @@ def webhook_handler():
     return 'ok'
 
 
-@app.route('/set_webhook', methods=['GET', 'POST'])
+# @app.route('/set_webhook', methods=['GET', 'POST'])
 def set_webhook():
     s = bot.setWebhook('https://damp-castle-40734.herokuapp.com/HOOK')
     if s:
@@ -201,5 +201,5 @@ def make_linear_ramp(white):
 def index():
     return '.'
 
-# if __name__ == "__main__":
-    # set_webhook()
+if __name__ == "__main__":
+    set_webhook()
