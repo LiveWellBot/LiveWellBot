@@ -56,10 +56,8 @@ def webhook_handler():
         try:
             firebase_dict = firebase.get('/users/' + chat_id, None)
             for k, v in firebase_dict.iteritems():
-                key = k.encode('utf8')
-                value = v.encode('utf8')
-                if key == "state":
-                    current_state = value
+                if k == "state":
+                    current_state = v
             print "THIS IS THE CURRENT STATE"
             print current_state
         except Exception as e:
