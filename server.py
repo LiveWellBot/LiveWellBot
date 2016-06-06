@@ -54,16 +54,22 @@ def webhook_handler():
         chat_id = update.message.chat.id
 
         print update.message
+        print update.message.text.encode('utf-8')
+        print "-----------------"
+        print "-----------------"
+        print "-----------------"
+        print "-----------------"
+        print "-----------------"
 
         # Telegram understands UTF-8, so encode text for unicode compatibility
         text = update.message.text.encode('utf-8')
-        file_id = update.message.photo[-1].file_id
+        # file_id = update.message.photo[-1].file_id
 
         if text:
             text_array = text.split()
             handle_command(text_array[0], update)
-        elif file_id:
-            filter_image(bot, update)
+        # elif file_id:
+        #     filter_image(bot, update)
 
         # try:
         #     change_attribute("test_subject", "test_key", text)
