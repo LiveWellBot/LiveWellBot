@@ -54,14 +54,11 @@ def webhook_handler():
 
         current_state = None
         try:
-            firebase_dict = firebase.get('/users/' + chat_id, None)
-            for k, v in firebase_dict.iteritems():
-                if k == "state":
-                    current_state = v
-            print "THIS IS THE CURRENT STATE"
+            current_state = firebase.get('/users/' + chat_id, "state")
             print current_state
         except Exception as e:
             print "FAILURE TO ASSIGN STATE"
+            print current_state
             print str(e)
         print update.message
         print update.message.text.encode('utf-8')
