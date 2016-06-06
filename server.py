@@ -45,7 +45,7 @@ filters = {
 }
 
 
-# @app.route('/HOOK', methods=['POST'])
+@app.route('/HOOK', methods=['POST'])
 def webhook_handler():
     if request.method == "POST":
         # retrieve the message in JSON and then transform it to Telegram object
