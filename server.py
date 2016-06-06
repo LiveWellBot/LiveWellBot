@@ -68,7 +68,7 @@ def webhook_handler():
 
         if text:
             text_array = text.split()
-            change_attribute(chat_id, "key", text)
+            # change_attribute(chat_id, "key", text)
             handle_command(text_array[0], update)
         elif photo:
             filter_image(bot, update)
