@@ -50,8 +50,15 @@ def webhook_handler():
     if request.method == "POST":
         # retrieve the message in JSON and then transform it to Telegram object
         update = telegram.Update.de_json(request.get_json(force=True))
-
         chat_id = update.message.chat.id
+
+        current_state = None
+        firebase_dict = firebase.get('/users/' + chat_id, None)
+        for k, v in firebase_dict.iteritems():
+            key = k.encode('utf8')
+            value = v.encode('utf8')
+            if key == "state":
+                current_state = value
 
         print update.message
         print update.message.text.encode('utf-8')
@@ -67,16 +74,19 @@ def webhook_handler():
         photo = update.message.photo
 
         if text:
-            text_array = text.split()
+            # text_array = text.split()
             print chat_id
             print text
+            handle_text(text, update, current_state)
+            # handle_command(text_array[0], update)
+        elif photo:
             try:
-                change_attribute(str(chat_id), "state", text)
+                change_attribute(str(chat_id), "state", "input_feeling")
             except Exception as e:
                 print str(e)
-            handle_command(text_array[0], update)
-        elif photo:
             filter_image(bot, update)
+            full_message = "How are you feeling today?"
+            bot.sendMessage(update.message.chat_id, text=full_message)
 
         # try:
         #     change_attribute("test_subject", "test_key", text)
@@ -97,6 +107,15 @@ def set_webhook():
 
 def change_attribute(subject, key, value):
     firebase.patch('/users/' + subject + '/', data={key: value})
+
+
+def handle_text(text, update, current_state):
+    if current_state == "input_feeling":
+        help(bot, update)
+    elif current_state == "/list_filters":
+        list_filters(bot, update)
+    else:
+        echo(bot, update)
 
 
 def handle_command(command, update):
