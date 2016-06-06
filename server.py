@@ -70,7 +70,10 @@ def webhook_handler():
             text_array = text.split()
             print chat_id
             print text
-            change_attribute(chat_id, "key", text)
+            try:
+                change_attribute(chat_id, "key", text)
+            except Exception as e:
+                print str(e)
             handle_command(text_array[0], update)
         elif photo:
             filter_image(bot, update)
