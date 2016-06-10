@@ -49,7 +49,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/api/Livewells', function(req,res){
     Livewell.find(function(err, livewells){
         if(err) return res.status(500).send({error: 'database failure'});
-        res.json(livewells);
+        //res.json(livewells);
+        res.send(livewells);
     })
 });
 
@@ -57,8 +58,9 @@ app.get('/api/Livewells', function(req,res){
   app.get('/api/livewell/:id', function(req,res){
     Livewell.findeOne({_id: req.params._id}, function(err, livewell) {
       if(err) return res.status(500).json({error: err});
-      if(!livewell) return res.status(404).json({error: 'The id not found'});
-      res.json(livewell);
+      if(!livewell) return res.status(404).send({error: 'The id not found'});
+      //res.json(livewell);
+      res.send(livewell);
     })
   });
 
@@ -79,7 +81,7 @@ app.get('/api/Livewells', function(req,res){
     livewell.save(function(err) {
       if(err) {
         console.error(err);
-        res.json({error: err});
+        res.json(err);
         return;
       }
       res.json(livewell);
@@ -90,18 +92,25 @@ app.get('/api/Livewells', function(req,res){
   app.put('/api/livewell/:id', function(req, res){
     Livewell.findById(req.params._id, function(err, livewell){
      if(err) return res.status(500).json({ error: 'database failure' });
-     if(!livewell) return res.status(404).json({ error: 'the image not found' });
-
+     if(!livewell) return res.status(404).json({ error: 'The id not found' });
+/*
      if(req.body.images.img_url) livewell.images.img_url = req.body.images.img_url;
      if(req.body.images.upload_date) livewell.images.upload_date = req.body.images.upload_date;
      if(req.body.images.weight) livewell.images.weight = req.body.images.weight;
      if(req.body.images.feeling) livewell.images.feeling = req.body.images.feeling;
      if(req.body.images.memo) livewell.images.memo = req.body.images.memo;
      if(req.body.images.tags) livewell.images.tags = req.body.images.tags;
+*/
+     images.img_url = req.body.images.img_url;
+     images.upload_date = req.body.images.upload_date;
+     images.weight = req.body.images.weight;
+     images.feeling = req.body.images.feeling;
+     images.memo = req.body.images.memo;
+     images.tags = req.body.images.tags;
 
      Livewell.save(function(err){
-         if(err) res.status(500).json({error: 'failed to update'});
-         res.json({message: 'Image updated'});
+         if(err) res.status(500).send(err);
+         res.send(livewell);
      });
 
  });
@@ -118,6 +127,29 @@ app.get('/api/Livewells', function(req,res){
 */
   res.status(204).end();
 })
+  });
+
+
+  app.use(function(req, res) {
+    Router.match({ routes: routes.default, location: req.url }, function(err, redirectLocation, renderProps) {
+      if (err) {
+        res.status(500).send(err.message)
+      } else if (redirectLocation) {
+        res.status(302).redirect(redirectLocation.pathname + redirectLocation.search)
+      } else if (renderProps) {
+          var html = ReactDOM.renderToString(React.createElement(Router.RoutingContext, renderProps));
+          var page = swig.renderFile('views/index.html', { html: html });
+          res.status(200).send(page);
+      } else {
+        res.status(404).send('Page Not Found')
+      }
+    });
+  });
+
+  app.use(function(err, req, res, next) {
+    console.log(err.stack.red);
+    res.status(err.status || 500);
+    res.send({ message: err.message });
   });
 
 app.listen(app.get('port'), function() {
