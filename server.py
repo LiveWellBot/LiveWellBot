@@ -136,21 +136,8 @@ def handle_text(text, update, current_state=None, chat_id=None):
     elif current_state == "input_tags":
         change_attribute(str(chat_id), "state", "complete")
         change_attribute(str(chat_id), "tags", text.split())
-        firebase_dict = firebase.get('/users/' + str(chat_id), None)
         try:
-            for k, v in firebase_dict.iteritems():
-                key = k
-                value = v
-                if key == "file_id":
-                    file_id = value
-                elif key == "weight":
-                    weight = value
-                elif key == "feeling":
-                    feeling = value
-                elif key == "memo":
-                    memo = value
-                elif key == "tags":
-                    tags = value
+            payload = create_img_payload(chat_id)
         except Exception as e:
             print "firebase assignment failed"
             print str(e)
@@ -159,12 +146,12 @@ def handle_text(text, update, current_state=None, chat_id=None):
             feeling = "failed"
             memo = "failed again"
             tags = ["a", "b"]
-        payload = {
-            'file_id': file_id,
-            'weight': weight,
-            'feeling': feeling,
-            'memo': memo,
-            'tags': tags}
+            payload = {
+                'file_id': file_id,
+                'weight': weight,
+                'feeling': feeling,
+                'memo': memo,
+                'tags': tags}
         r = requests.post("http://requestb.in/ukxanvuk",
                           data=json.dumps(payload))
         print(r.status_code, r.reason)
@@ -203,6 +190,30 @@ def filter_image(bot, update):
                   photo=open(chat_id+'/download.jpg', 'rb'),
                   caption=('...and, here\'s your image inverted.'))
     return
+
+
+def create_img_payload(chat_id):
+    firebase_dict = firebase.get('/users/' + str(chat_id), None)
+    for k, v in firebase_dict.iteritems():
+        key = k
+        value = v
+        if key == "file_id":
+            file_id = value
+        elif key == "weight":
+            weight = value
+        elif key == "feeling":
+            feeling = value
+        elif key == "memo":
+            memo = value
+        elif key == "tags":
+            tags = value
+    payload = {
+        'file_id': file_id,
+        'weight': weight,
+        'feeling': feeling,
+        'memo': memo,
+        'tags': tags}
+    return payload
 
 
 def echo(bot, update):
