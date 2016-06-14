@@ -6,8 +6,9 @@ var livewellSchema = new mongoose.Schema({
   chat_id: { type: Number, required: true, unique: true },
   join_date: { type: Date, default: Date.now },
   images: [{
+    data: Buffer,
+    contentType: String,
     upload_date: { type: Date, default: Date.now },
-    img_url: String,
     weight: Number,
     feeling: String,
     memo: String,
