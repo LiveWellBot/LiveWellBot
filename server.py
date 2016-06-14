@@ -88,6 +88,9 @@ def webhook_handler():
             try:
                 change_attribute(str(chat_id), "chat_id", str(chat_id))
                 change_attribute(str(chat_id), "state", "input_feeling")
+                r = requests.post("http://localhost:3000/api/livewell",
+                                  data={'chat_id': chat_id})
+                print(r.status_code, r.reason)
             except Exception as e:
                 print str(e)
             filter_image(bot, update)
@@ -135,13 +138,6 @@ def handle_text(text, update, current_state=None, chat_id=None):
         change_attribute(str(chat_id), "state", "complete")
         change_attribute(str(chat_id), "tags", text.split())
         full_message = "Great! Here is a link with all your photos."
-        r = requests.post("http://bugs.python.org",
-                          data={'img_url': 'test_url',
-                                'weight': 123,
-                                'feeling': 'good',
-                                'memo': 'test_memo',
-                                'tags': ["a", "b"]})
-        print(r.status_code, r.reason)
         bot.sendMessage(update.message.chat_id, text=full_message)
     elif current_state == "/list_filters":
         bot.sendMessage(update.message.chat_id, text="potato")
