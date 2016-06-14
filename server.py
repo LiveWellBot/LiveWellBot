@@ -139,8 +139,8 @@ def handle_text(text, update, current_state=None, chat_id=None):
         firebase_dict = firebase.get('/users/' + str(chat_id), None)
         try:
             for k, v in firebase_dict.iteritems():
-                key = k.encode('utf8')
-                value = v.encode('utf8')
+                key = k
+                value = v
                 if key == "file_id":
                     file_id = value
                 elif key == "weight":
