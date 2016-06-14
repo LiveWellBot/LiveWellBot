@@ -3,6 +3,7 @@ require('babel-register');
 
 var path = require('path');
 var express = require('express');
+var fs = require('fs');
 var bodyParser = require('body-parser');
 var compression = require('compression');
 var favicon = require('serve-favicon');
@@ -56,7 +57,7 @@ app.get('/api/Livewells', function(req,res){
 
   // GET Single Livewell
   app.get('/api/livewell/:id', function(req,res){
-    Livewell.findeOne({_id: req.params._id}, function(err, livewell) {
+    Livewell.findOne({_id: req.params._id}, function(err, livewell) {
       if(err) return res.status(500).json({error: err});
       if(!livewell) return res.status(404).send({error: 'The id not found'});
       //res.json(livewell);
@@ -93,22 +94,18 @@ app.get('/api/Livewells', function(req,res){
     Livewell.findById(req.params._id, function(err, livewell){
      if(err) return res.status(500).json({ error: 'database failure' });
      if(!livewell) return res.status(404).json({ error: 'The id not found' });
-/*
-     if(req.body.images.img_url) livewell.images.img_url = req.body.images.img_url;
-     if(req.body.images.upload_date) livewell.images.upload_date = req.body.images.upload_date;
-     if(req.body.images.weight) livewell.images.weight = req.body.images.weight;
-     if(req.body.images.feeling) livewell.images.feeling = req.body.images.feeling;
-     if(req.body.images.memo) livewell.images.memo = req.body.images.memo;
-     if(req.body.images.tags) livewell.images.tags = req.body.images.tags;
-*/
-     images.img_url = req.body.images.img_url;
-     images.upload_date = req.body.images.upload_date;
-     images.weight = req.body.images.weight;
-     images.feeling = req.body.images.feeling;
-     images.memo = req.body.images.memo;
-     images.tags = req.body.images.tags;
 
-     Livewell.save(function(err){
+     if(req.body.images) {
+     livewell.images.data = fs.readFileSync(req.body.images.img_url);
+     livewell.images.contentType = 'image/png';
+     livewell.images.upload_date = req.body.images.upload_date;
+     livewell.images.weight = req.body.images.weight;
+     livewell.images.feeling = req.body.images.feeling;
+     livewell.images.memo = req.body.images.memo;
+     livewell.images.tags = req.body.images.tags;
+   }
+
+   Livewell.save(function(err){
          if(err) res.status(500).send(err);
          res.send(livewell);
      });
