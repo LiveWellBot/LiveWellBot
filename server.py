@@ -137,19 +137,28 @@ def handle_text(text, update, current_state=None, chat_id=None):
         change_attribute(str(chat_id), "state", "complete")
         change_attribute(str(chat_id), "tags", text.split())
         firebase_dict = firebase.get('/users/' + str(chat_id), None)
-        for k, v in firebase_dict.iteritems():
-            key = k.encode('utf8')
-            value = v.encode('utf8')
-            if key == "file_id":
-                file_id = value
-            elif key == "weight":
-                weight = value
-            elif key == "feeling":
-                feeling = value
-            elif key == "memo":
-                memo = value
-            elif key == "tags":
-                tags = value
+        try:
+            for k, v in firebase_dict.iteritems():
+                key = k.encode('utf8')
+                value = v.encode('utf8')
+                if key == "file_id":
+                    file_id = value
+                elif key == "weight":
+                    weight = value
+                elif key == "feeling":
+                    feeling = value
+                elif key == "memo":
+                    memo = value
+                elif key == "tags":
+                    tags = value
+        except Exception as e:
+            print "firebase assignment failed"
+            print str(e)
+            file_id = 12345
+            weight = 123
+            feeling = "failed"
+            memo = "failed again"
+            tags = ["a", "b"]
         payload = {
             'file_id': file_id,
             'weight': weight,
