@@ -57,7 +57,7 @@ app.get('/api/Livewells', function(req,res){
 
   // GET Single Livewell
   app.get('/api/livewell/:_id', function(req,res){
-    Livewell.findOne({_id: req.params._id}, function(err, livewell) {
+    Livewell.findById(req.params._id, function(err, livewell) {
       if(err) return res.status(500).json({error: err});
       if(!livewell) return res.status(404).send({error: 'The id not found'});
       //res.json(livewell);
@@ -67,10 +67,14 @@ app.get('/api/Livewells', function(req,res){
 
   // GET single image
   app.get('/api/livewell/:_id/:images_id', function(req, res){
-    Livewell.find({_id: req.params._id}, function(err, livewell){
+    Livewell.findById(req.params._id, function(err, livewell){
         if(err) return res.status(500).json({error: err});
-        if(livewells.length === 0) return res.status(404).json({error: 'the image not found'});
-        res.json(livewell);
+        if(livewell.length === 0) return res.status(404).json({error: 'the image not found'});
+        res.send(livewell.images[0].data);
+        // res.writeHead(200, {'Content-Type': 'text/html'});
+        // res.write('<html><body><img src="data:image/png;base64,')
+        // res.write(new Buffer(livewell.images[0].data).toString('base64'));
+        // res.end('"/></body></html>');
     })
   });
 
@@ -90,22 +94,28 @@ app.get('/api/Livewells', function(req,res){
   });
 
   // PUT Image (UPDATE)
-  app.put('/api/livewell/:id', function(req, res){
+  app.put('/api/livewell/:_id', function(req, res){
     Livewell.findById(req.params._id, function(err, livewell){
      if(err) return res.status(500).json({ error: 'database failure' });
      if(!livewell) return res.status(404).json({ error: 'The id not found' });
 
-     if(req.body.images) {
-     livewell.images.data = fs.readFileSync(req.body.images.img_url);
-     livewell.images.contentType = 'image/png';
-     livewell.images.upload_date = req.body.images.upload_date;
-     livewell.images.weight = req.body.images.weight;
-     livewell.images.feeling = req.body.images.feeling;
-     livewell.images.memo = req.body.images.memo;
-     livewell.images.tags = req.body.images.tags;
-   }
+      var imageObj = { 
+        data: "../public/life.png",
+        contentType: "",
+        feeling: "Good"
+         };
+      livewell.images.push(imageObj);
+     // livewell.images.data = fs.readFileSync(req.body.images.img_url);
+     // livewell.images.contentType = 'image/png';
+     // livewell.images.upload_date = req.body.images.upload_date;
+     // livewell.images.weight = req.body.images.weight;
+     // livewell.images.feeling = req.body.images.feeling;
+     // livewell.images.memo = req.body.images.memo;
+     // livewell.images.tags = req.body.images.tags;
+     console.log(livewell);
+     console.log("Image Success");
 
-   Livewell.save(function(err){
+   livewell.save(function(err){
          if(err) res.status(500).send(err);
          res.send(livewell);
      });
