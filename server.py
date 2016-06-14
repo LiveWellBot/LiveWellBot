@@ -88,9 +88,13 @@ def webhook_handler():
             try:
                 change_attribute(str(chat_id), "chat_id", str(chat_id))
                 change_attribute(str(chat_id), "state", "input_feeling")
-                r = requests.post("http://localhost:3000/api/livewell",
-                                  data={'chat_id': chat_id})
-                print(r.status_code, r.reason)
+                try:
+                    r = requests.post("http://localhost:3000/api/livewell",
+                                      data={'chat_id': chat_id})
+                    print(r.status_code, r.reason)
+                except Exception as e:
+                    print("request.post failed...")
+                    print(str(e))
             except Exception as e:
                 print str(e)
             filter_image(bot, update)
