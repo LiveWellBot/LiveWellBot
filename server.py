@@ -152,8 +152,8 @@ def handle_text(text, update, current_state=None, chat_id=None):
                 'feeling': feeling,
                 'memo': memo,
                 'tags': tags}
-        r = requests.post("http://requestb.in/ukxanvuk",
-                          data=json.dumps(payload))
+        r = requests.put("http://requestb.in/ukxanvuk",
+                         data=json.dumps(payload))
         print(r.status_code, r.reason)
         full_message = "Great! Here is a link with all your photos."
         bot.sendMessage(update.message.chat_id, text=full_message)
