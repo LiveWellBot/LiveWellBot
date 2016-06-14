@@ -23,6 +23,7 @@ import logging
 import sendgrid
 from firebase import firebase
 import requests
+import json
 
 # Firebase is used to track user state and information
 firebase_db = os.environ['FIREBASE_DB']
@@ -89,8 +90,8 @@ def webhook_handler():
                 change_attribute(str(chat_id), "chat_id", str(chat_id))
                 change_attribute(str(chat_id), "state", "input_feeling")
                 try:
-                    r = requests.post("http://bugs.python.org",
-                                      data={'chat_id': 1234})
+                    r = requests.post("http://localhost:3000/api/livewell",
+                                      data=json.dumps({'chat_id': 1234}))
                     print(r.status_code, r.reason)
                 except Exception as e:
                     print("request.post failed...")
