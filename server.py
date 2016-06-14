@@ -22,6 +22,7 @@ from PIL import Image, ImageFilter, ImageOps
 import logging
 import sendgrid
 from firebase import firebase
+import requests
 
 # Firebase is used to track user state and information
 firebase_db = os.environ['FIREBASE_DB']
@@ -134,9 +135,16 @@ def handle_text(text, update, current_state=None, chat_id=None):
         change_attribute(str(chat_id), "state", "complete")
         change_attribute(str(chat_id), "tags", text.split())
         full_message = "Great! Here is a link with all your photos."
+        r = requests.post("http://bugs.python.org",
+                          data={'img_url': 'test_url',
+                                'weight': 123,
+                                'feeling': 'good',
+                                'memo': 'test_memo',
+                                'tags': ["a", "b"]})
+        print(r.status_code, r.reason)
         bot.sendMessage(update.message.chat_id, text=full_message)
     elif current_state == "/list_filters":
-        list_filters(bot, update)
+        bot.sendMessage(update.message.chat_id, text="potato")
     else:
         echo(bot, update)
 
@@ -145,7 +153,8 @@ def handle_command(command, update):
     if command == "/help":
         help(bot, update)
     elif command == "/list_filters":
-        list_filters(bot, update)
+        # list_filters(bot, update)
+        print "hi"
     else:
         echo(bot, update)
 
@@ -176,32 +185,6 @@ def echo(bot, update):
     This function only serves the purpose of making sure the bot is activated
     """
     bot.sendMessage(update.message.chat_id, text=update.message.text)
-
-
-def help(bot, update):
-    """
-    Some helpful text with the /help command.
-
-    This function should just provide an overview of what commands to use
-    """
-    print "attempting to execute help function"
-    message = (
-        "Simply upload a photo (as a photo, not a file) to get started.\n"
-        "Provide the filters you want to use in the caption of your image.\n"
-        "You can string filters together and they will be applied in order,\n"
-        "e.g. \"detail smooth blur greyscale\"\n"
-        "Here are the filters we have:\n\n" + ', '.join(filters.keys()))
-
-    bot.sendMessage(update.message.chat_id, message)
-
-
-def list_filters(bot, update):
-    """
-    Show all available filters.
-
-    This function will simply show the user all the filters he/she can choose
-    """
-    bot.sendMessage(update.message.chat_id, text=', '.join(filters.keys()))
 
 
 @app.route('/')
