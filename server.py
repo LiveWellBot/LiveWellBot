@@ -101,12 +101,6 @@ def webhook_handler():
             filter_image(bot, update)
             full_message = "How are you feeling today?"
             bot.sendMessage(update.message.chat_id, text=full_message)
-
-        # try:
-        #     change_attribute("test_subject", "test_key", text)
-        # except Exception as e:
-        #     print "firebase patch failed"
-        #     print str(e)
     return 'ok'
 
 
@@ -142,6 +136,29 @@ def handle_text(text, update, current_state=None, chat_id=None):
     elif current_state == "input_tags":
         change_attribute(str(chat_id), "state", "complete")
         change_attribute(str(chat_id), "tags", text.split())
+        firebase_dict = firebase.get('/users/' + str(chat_id), None)
+        for k, v in firebase_dict.iteritems():
+            key = k.encode('utf8')
+            value = v.encode('utf8')
+            if key == "file_id":
+                file_id = value
+            elif key == "weight":
+                weight = value
+            elif key == "feeling":
+                feeling = value
+            elif key == "memo":
+                memo = value
+            elif key == "tags":
+                tags = value
+        payload = {
+            'file_id': file_id,
+            'weight': weight,
+            'feeling': feeling,
+            'memo': memo,
+            'tags': tags}
+        r = requests.post("http://requestb.in/w6j6fow6",
+                          data=json.dumps(payload))
+        print(r.status_code, r.reason)
         full_message = "Great! Here is a link with all your photos."
         bot.sendMessage(update.message.chat_id, text=full_message)
     elif current_state == "/list_filters":
