@@ -56,7 +56,7 @@ app.get('/api/Livewells', function(req,res){
 });
 
   // GET Single Livewell
-  app.get('/api/livewell/:id', function(req,res){
+  app.get('/api/livewell/:_id', function(req,res){
     Livewell.findOne({_id: req.params._id}, function(err, livewell) {
       if(err) return res.status(500).json({error: err});
       if(!livewell) return res.status(404).send({error: 'The id not found'});
