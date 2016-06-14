@@ -91,7 +91,7 @@ def webhook_handler():
                 change_attribute(str(chat_id), "state", "input_feeling")
                 try:
                     r = requests.post("http://localhost:3000/api/livewell",
-                                      data=json.dumps({'chat_id': 1234}))
+                                      data=json.dumps({"chat_id": 1234}))
                     print(r.status_code, r.reason)
                 except Exception as e:
                     print("request.post failed...")
