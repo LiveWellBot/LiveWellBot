@@ -90,7 +90,7 @@ def webhook_handler():
                 change_attribute(str(chat_id), "chat_id", str(chat_id))
                 change_attribute(str(chat_id), "state", "input_feeling")
                 try:
-                    r = requests.post("http://requestb.in/w6j6fow6",
+                    r = requests.post("http://requestb.in/ukxanvuk",
                                       data=json.dumps({"chat_id": chat_id}))
                     print(r.status_code, r.reason)
                 except Exception as e:
@@ -165,7 +165,7 @@ def handle_text(text, update, current_state=None, chat_id=None):
             'feeling': feeling,
             'memo': memo,
             'tags': tags}
-        r = requests.post("http://requestb.in/w6j6fow6",
+        r = requests.post("http://requestb.in/ukxanvuk",
                           data=json.dumps(payload))
         print(r.status_code, r.reason)
         full_message = "Great! Here is a link with all your photos."
