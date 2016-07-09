@@ -22,6 +22,8 @@ from PIL import Image, ImageFilter, ImageOps
 import logging
 import sendgrid
 from firebase import firebase
+import requests
+import json
 
 # Firebase is used to track user state and information
 firebase_db = os.environ['FIREBASE_DB']
@@ -87,17 +89,18 @@ def webhook_handler():
             try:
                 change_attribute(str(chat_id), "chat_id", str(chat_id))
                 change_attribute(str(chat_id), "state", "input_feeling")
+                try:
+                    r = requests.post("http://requestb.in/ukxanvuk",
+                                      data=json.dumps({"chat_id": chat_id}))
+                    print(r.status_code, r.reason)
+                except Exception as e:
+                    print("request.post failed...")
+                    print(str(e))
             except Exception as e:
                 print str(e)
             filter_image(bot, update)
             full_message = "How are you feeling today?"
             bot.sendMessage(update.message.chat_id, text=full_message)
-
-        # try:
-        #     change_attribute("test_subject", "test_key", text)
-        # except Exception as e:
-        #     print "firebase patch failed"
-        #     print str(e)
     return 'ok'
 
 
@@ -133,10 +136,29 @@ def handle_text(text, update, current_state=None, chat_id=None):
     elif current_state == "input_tags":
         change_attribute(str(chat_id), "state", "complete")
         change_attribute(str(chat_id), "tags", text.split())
+        try:
+            payload = create_img_payload(chat_id)
+        except Exception as e:
+            print "firebase assignment failed"
+            print str(e)
+            file_id = 12345
+            weight = 123
+            feeling = "failed"
+            memo = "failed again"
+            tags = ["a", "b"]
+            payload = {
+                'file_id': file_id,
+                'weight': weight,
+                'feeling': feeling,
+                'memo': memo,
+                'tags': tags}
+        r = requests.put("http://requestb.in/ukxanvuk",
+                         data=json.dumps(payload))
+        print(r.status_code, r.reason)
         full_message = "Great! Here is a link with all your photos."
         bot.sendMessage(update.message.chat_id, text=full_message)
     elif current_state == "/list_filters":
-        list_filters(bot, update)
+        bot.sendMessage(update.message.chat_id, text="potato")
     else:
         echo(bot, update)
 
@@ -145,7 +167,8 @@ def handle_command(command, update):
     if command == "/help":
         help(bot, update)
     elif command == "/list_filters":
-        list_filters(bot, update)
+        # list_filters(bot, update)
+        print "hi"
     else:
         echo(bot, update)
 
@@ -169,6 +192,30 @@ def filter_image(bot, update):
     return
 
 
+def create_img_payload(chat_id):
+    firebase_dict = firebase.get('/users/' + str(chat_id), None)
+    for k, v in firebase_dict.iteritems():
+        key = k
+        value = v
+        if key == "file_id":
+            file_id = value
+        elif key == "weight":
+            weight = value
+        elif key == "feeling":
+            feeling = value
+        elif key == "memo":
+            memo = value
+        elif key == "tags":
+            tags = value
+    payload = {
+        'file_id': file_id,
+        'weight': weight,
+        'feeling': feeling,
+        'memo': memo,
+        'tags': tags}
+    return payload
+
+
 def echo(bot, update):
     """
     Repeat any text message as this bot's default behavior.
@@ -176,32 +223,6 @@ def echo(bot, update):
     This function only serves the purpose of making sure the bot is activated
     """
     bot.sendMessage(update.message.chat_id, text=update.message.text)
-
-
-def help(bot, update):
-    """
-    Some helpful text with the /help command.
-
-    This function should just provide an overview of what commands to use
-    """
-    print "attempting to execute help function"
-    message = (
-        "Simply upload a photo (as a photo, not a file) to get started.\n"
-        "Provide the filters you want to use in the caption of your image.\n"
-        "You can string filters together and they will be applied in order,\n"
-        "e.g. \"detail smooth blur greyscale\"\n"
-        "Here are the filters we have:\n\n" + ', '.join(filters.keys()))
-
-    bot.sendMessage(update.message.chat_id, message)
-
-
-def list_filters(bot, update):
-    """
-    Show all available filters.
-
-    This function will simply show the user all the filters he/she can choose
-    """
-    bot.sendMessage(update.message.chat_id, text=', '.join(filters.keys()))
 
 
 @app.route('/')
