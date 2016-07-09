@@ -116,7 +116,7 @@ app.get('/api/Livewells', function(req,res){
  });
   });
 
-  // DELETE Image
+  // DELETE Id
   app.delete('/api/livewell/:id', function(req, res){
     Livewell.remove({ _id: req.params.images.images_id }, function(err, output){
   if(err) return res.status(500).json({ error: "database failure" });
