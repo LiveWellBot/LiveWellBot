@@ -163,20 +163,27 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
             full_message = "Leave some comments on your photo!"
             bot.sendMessage(update.message.chat_id, text=full_message)
         else:
+            change_attribute(str(chat_id), "weight", re.sub("\D", "", text))
             change_attribute(str(chat_id), "state", "input_weight_unit")
             full_message = "is that in kg or lbs?"
             bot.sendMessage(update.message.chat_id, text=full_message)
     elif current_state == "input_weight_unit":
         if "kg" in text:
+            print("kg was selected")
+            firebase_object = firebase.get('/users/' + str(chat_id), None)
+            weight_number = firebase_object.get('weight')
+            weight_number = 2.20462 * float(weight_number)
             change_attribute(str(chat_id), "state", "input_memo")
+            change_attribute(str(chat_id), "weight", str(weight_number))
             full_message = "Leave some comments on your photo!"
             bot.sendMessage(update.message.chat_id, text=full_message)
         elif "lb" in text:
+            print("lb was selected")
             change_attribute(str(chat_id), "state", "input_memo")
             full_message = "Leave some comments on your photo!"
             bot.sendMessage(update.message.chat_id, text=full_message)
         else:
-            full_message = "is that in kg or lbs?"
+            full_message = "I didn't quite understand that, is that in kg or lbs?"
             bot.sendMessage(update.message.chat_id, text=full_message)
             return
     elif current_state == "input_memo":
