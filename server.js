@@ -70,11 +70,11 @@ app.get('/api/Livewells', function(req,res){
     Livewell.findById(req.params._id, function(err, livewell){
         if(err) return res.status(500).json({error: err});
         if(livewell.length === 0) return res.status(404).json({error: 'the image not found'});
-        res.send(livewell.images[0].data);
-        // res.writeHead(200, {'Content-Type': 'text/html'});
-        // res.write('<html><body><img src="data:image/png;base64,')
-        // res.write(new Buffer(livewell.images[0].data).toString('base64'));
-        // res.end('"/></body></html>');
+        //res.send(livewell.images[0].data);
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write('<html><body><img src="data:image/png;base64,')
+        res.write(new Buffer(livewell.images[0].data).toString('base64'));
+        res.end('"/></body></html>');
     })
   });
 
