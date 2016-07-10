@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
-import PicturesReducer from './reducer_pictures';
+import LivewellReducer from './reducer_livewell';
 
 const rootReducer = combineReducers ({
-  pictures: PicturesReducer
+  livewell: LivewellReducer
 });
 
 export default rootReducer;
