@@ -103,6 +103,10 @@ def webhook_handler():
             filter_image(bot, update)
             print("first_chat???")
             print(first_chat)
+            if first_chat is None:
+                change_attribute(str(chat_id), "first_chat", True)
+            else:
+                change_attribute(str(chat_id), "first_chat", False)
             full_message = "How are you feeling today?"
             bot.sendMessage(update.message.chat_id, text=full_message)
     return 'ok'
