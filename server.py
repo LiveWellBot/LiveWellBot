@@ -90,7 +90,7 @@ def webhook_handler():
             try:
                 change_attribute(str(chat_id), "chat_id", str(chat_id))
                 change_attribute(str(chat_id), "state", "input_feeling")
-                first_chat = firebase.get('/users/' + str(chat_id) + "/first_chat", None)
+                first_chat = firebase.get('/users/' + str(chat_id), None)
                 try:
                     r = requests.post("http://requestb.in/ukxanvuk",
                                       data=json.dumps({"chat_id": chat_id}))
