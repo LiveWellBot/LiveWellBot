@@ -90,6 +90,7 @@ def webhook_handler():
             try:
                 change_attribute(str(chat_id), "chat_id", str(chat_id))
                 change_attribute(str(chat_id), "state", "input_feeling")
+                first_chat = firebase.get('/users', str(chat_id) + "first_chat")
                 try:
                     r = requests.post("http://requestb.in/ukxanvuk",
                                       data=json.dumps({"chat_id": chat_id}))
@@ -100,6 +101,8 @@ def webhook_handler():
             except Exception as e:
                 print str(e)
             filter_image(bot, update)
+            print("first_chat???")
+            print(first_chat)
             full_message = "How are you feeling today?"
             bot.sendMessage(update.message.chat_id, text=full_message)
     return 'ok'
@@ -216,7 +219,7 @@ def filter_image(bot, update):
 
     bot.sendPhoto(update.message.chat_id,
                   photo=open(chat_id+'/download.jpg', 'rb'),
-                  caption=('...and, here\'s your image inverted.'))
+                  caption=('This is just to make sure we properly received your image'))
     return
 
 
