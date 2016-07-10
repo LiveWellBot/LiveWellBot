@@ -24,6 +24,7 @@ import sendgrid
 from firebase import firebase
 import requests
 import json
+import re
 
 # Firebase is used to track user state and information
 firebase_db = os.environ['FIREBASE_DB']
@@ -126,17 +127,22 @@ def handle_text(text, update, current_state=None, chat_id=None):
     elif current_state == "input_weight":
         if "kg" in text:
             print("kg was selected")
+            weight_number = re.sub("\D", "", text)
+            weight_number = 2.20462 * float(weight_number)
+            change_attribute(str(chat_id), "state", "input_memo")
+            change_attribute(str(chat_id), "weight", str(weight_number))
+            full_message = "Leave some comments on your photo!"
+            bot.sendMessage(update.message.chat_id, text=full_message)
         elif "lb" in text:
             print("lb was selected")
+            change_attribute(str(chat_id), "state", "input_memo")
+            change_attribute(str(chat_id), "weight", re.sub("\D", "", text))
+            full_message = "Leave some comments on your photo!"
+            bot.sendMessage(update.message.chat_id, text=full_message)
         else:
             change_attribute(str(chat_id), "state", "input_weight_unit")
             full_message = "is that in kg or lbs?"
             bot.sendMessage(update.message.chat_id, text=full_message)
-            return
-        change_attribute(str(chat_id), "state", "input_memo")
-        change_attribute(str(chat_id), "weight", text)
-        full_message = "Leave some comments on your photo!"
-        bot.sendMessage(update.message.chat_id, text=full_message)
     elif current_state == "input_weight_unit":
         if "kg" in text:
             change_attribute(str(chat_id), "state", "input_memo")
