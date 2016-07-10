@@ -105,10 +105,16 @@ def webhook_handler():
             print(first_chat)
             if first_chat is None:
                 change_attribute(str(chat_id), "first_chat", True)
+                change_attribute(str(chat_id), "state", "input_wake")
+                full_message = ("It looks like this is your first time talking with"
+                                "me! To help us give you a better idea of how you"
+                                "are feeling from day to day, can you tell us when"
+                                "You wake up?")
+                bot.sendMessage(update.message.chat_id, text=full_message)
             else:
                 change_attribute(str(chat_id), "first_chat", False)
-            full_message = "How are you feeling today?"
-            bot.sendMessage(update.message.chat_id, text=full_message)
+                full_message = "How are you feeling today?"
+                bot.sendMessage(update.message.chat_id, text=full_message)
     return 'ok'
 
 
@@ -126,7 +132,17 @@ def change_attribute(subject, key, value):
 
 
 def handle_text(text, update, current_state=None, chat_id=None, first_chat=None):
-    if current_state == "input_feeling":
+    if current_state == "input_wake":
+        change_attribute(str(chat_id), "state", "input_sleep")
+        change_attribute(str(chat_id), "time_wake", text)
+        full_message = "What time do you usually go to sleep?"
+        bot.sendMessage(update.message.chat_id, text=full_message)
+    elif current_state == "input_sleep":
+        change_attribute(str(chat_id), "state", "input_feeling")
+        change_attribute(str(chat_id), "time_sleep", text)
+        full_message = "How are you feeling today?"
+        bot.sendMessage(update.message.chat_id, text=full_message)
+    elif current_state == "input_feeling":
         change_attribute(str(chat_id), "state", "input_weight")
         change_attribute(str(chat_id), "feeling", text)
         full_message = "What's your weight today?"
