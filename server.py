@@ -124,10 +124,32 @@ def handle_text(text, update, current_state=None, chat_id=None):
         full_message = "What's your weight today?"
         bot.sendMessage(update.message.chat_id, text=full_message)
     elif current_state == "input_weight":
+        if "kg" in text:
+            continue
+        elif "lb" in text:
+            continue
+        else:
+            change_attribute(str(chat_id), "state", "input_weight_unit")
+            full_message = "is that in kg or lbs?"
+            bot.sendMessage(update.message.chat_id, text=full_message)
+            return
         change_attribute(str(chat_id), "state", "input_memo")
         change_attribute(str(chat_id), "weight", text)
         full_message = "Leave some comments on your photo!"
         bot.sendMessage(update.message.chat_id, text=full_message)
+    elif current_state == "input_weight_unit":
+        if "kg" in text:
+            change_attribute(str(chat_id), "state", "input_memo")
+            full_message = "Leave some comments on your photo!"
+            bot.sendMessage(update.message.chat_id, text=full_message)
+        elif "lb" in text:
+            change_attribute(str(chat_id), "state", "input_memo")
+            full_message = "Leave some comments on your photo!"
+            bot.sendMessage(update.message.chat_id, text=full_message)
+        else:
+            full_message = "is that in kg or lbs?"
+            bot.sendMessage(update.message.chat_id, text=full_message)
+            return
     elif current_state == "input_memo":
         change_attribute(str(chat_id), "state", "input_tags")
         change_attribute(str(chat_id), "memo", text)
