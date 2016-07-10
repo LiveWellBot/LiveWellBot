@@ -56,16 +56,22 @@ def webhook_handler():
         chat_id = update.message.chat.id
 
         current_state = None
+        first_chat = None
         try:
             firebase_dict = firebase.get('/users/' + str(chat_id), None)
             for k, v in firebase_dict.iteritems():
                 if k == "state":
                     current_state = v
+                elif k == "first_chat":
+                    first_chat = v
             print "THIS IS THE CURRENT STATE"
             print current_state
+            print "THIS IS THE FIRST_CHAT STATUS"
+            print first_chat
         except Exception as e:
             print "FAILURE TO ASSIGN STATE"
             print current_state
+            print first_chat
             print str(e)
         print update.message
         print update.message.text.encode('utf-8')
@@ -84,7 +90,7 @@ def webhook_handler():
             # text_array = text.split()
             print chat_id
             print text
-            handle_text(text, update, current_state, chat_id)
+            handle_text(text, update, current_state, chat_id, first_chat)
             # handle_command(text_array[0], update)
         elif photo:
             try:
@@ -92,13 +98,6 @@ def webhook_handler():
                 change_attribute(str(chat_id), "state", "input_feeling")
                 firebase_object = firebase.get('/users/' + str(chat_id), None)
                 first_chat = firebase_object.get('first_chat')
-                try:
-                    r = requests.post("http://requestb.in/ukxanvuk",
-                                      data=json.dumps({"chat_id": chat_id}))
-                    print(r.status_code, r.reason)
-                except Exception as e:
-                    print("request.post failed...")
-                    print(str(e))
             except Exception as e:
                 print str(e)
             filter_image(bot, update)
@@ -126,7 +125,7 @@ def change_attribute(subject, key, value):
     firebase.patch('/users/' + subject + '/', data={key: value})
 
 
-def handle_text(text, update, current_state=None, chat_id=None):
+def handle_text(text, update, current_state=None, chat_id=None, first_chat=None):
     if current_state == "input_feeling":
         change_attribute(str(chat_id), "state", "input_weight")
         change_attribute(str(chat_id), "feeling", text)
