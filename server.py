@@ -125,9 +125,9 @@ def handle_text(text, update, current_state=None, chat_id=None):
         bot.sendMessage(update.message.chat_id, text=full_message)
     elif current_state == "input_weight":
         if "kg" in text:
-            continue
+            print("kg was selected")
         elif "lb" in text:
-            continue
+            print("lb was selected")
         else:
             change_attribute(str(chat_id), "state", "input_weight_unit")
             full_message = "is that in kg or lbs?"
