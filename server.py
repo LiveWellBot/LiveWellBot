@@ -24,6 +24,7 @@ import sendgrid
 from firebase import firebase
 import requests
 import json
+import re
 
 # Firebase is used to track user state and information
 firebase_db = os.environ['FIREBASE_DB']
@@ -55,16 +56,22 @@ def webhook_handler():
         chat_id = update.message.chat.id
 
         current_state = None
+        first_chat = None
         try:
             firebase_dict = firebase.get('/users/' + str(chat_id), None)
             for k, v in firebase_dict.iteritems():
                 if k == "state":
                     current_state = v
+                elif k == "first_chat":
+                    first_chat = v
             print "THIS IS THE CURRENT STATE"
             print current_state
+            print "THIS IS THE FIRST_CHAT STATUS"
+            print first_chat
         except Exception as e:
             print "FAILURE TO ASSIGN STATE"
             print current_state
+            print first_chat
             print str(e)
         print update.message
         print update.message.text.encode('utf-8')
@@ -83,24 +90,31 @@ def webhook_handler():
             # text_array = text.split()
             print chat_id
             print text
-            handle_text(text, update, current_state, chat_id)
+            handle_text(text, update, current_state, chat_id, first_chat)
             # handle_command(text_array[0], update)
         elif photo:
             try:
                 change_attribute(str(chat_id), "chat_id", str(chat_id))
                 change_attribute(str(chat_id), "state", "input_feeling")
-                try:
-                    r = requests.post("http://requestb.in/ukxanvuk",
-                                      data=json.dumps({"chat_id": chat_id}))
-                    print(r.status_code, r.reason)
-                except Exception as e:
-                    print("request.post failed...")
-                    print(str(e))
+                firebase_object = firebase.get('/users/' + str(chat_id), None)
+                first_chat = firebase_object.get('first_chat')
             except Exception as e:
                 print str(e)
             filter_image(bot, update)
-            full_message = "How are you feeling today?"
-            bot.sendMessage(update.message.chat_id, text=full_message)
+            print("first_chat???")
+            print(first_chat)
+            if first_chat is None:
+                change_attribute(str(chat_id), "first_chat", True)
+                change_attribute(str(chat_id), "state", "input_wake")
+                full_message = ("It looks like this is your first time talking with"
+                                "me! To help us give you a better idea of how you"
+                                "are feeling from day to day, can you tell us when"
+                                "You wake up?")
+                bot.sendMessage(update.message.chat_id, text=full_message)
+            else:
+                change_attribute(str(chat_id), "first_chat", False)
+                full_message = "How are you feeling today?"
+                bot.sendMessage(update.message.chat_id, text=full_message)
     return 'ok'
 
 
@@ -117,17 +131,61 @@ def change_attribute(subject, key, value):
     firebase.patch('/users/' + subject + '/', data={key: value})
 
 
-def handle_text(text, update, current_state=None, chat_id=None):
-    if current_state == "input_feeling":
+def handle_text(text, update, current_state=None, chat_id=None, first_chat=None):
+    if current_state == "input_wake":
+        change_attribute(str(chat_id), "state", "input_sleep")
+        change_attribute(str(chat_id), "time_wake", text)
+        full_message = "What time do you usually go to sleep?"
+        bot.sendMessage(update.message.chat_id, text=full_message)
+    elif current_state == "input_sleep":
+        change_attribute(str(chat_id), "state", "input_feeling")
+        change_attribute(str(chat_id), "time_sleep", text)
+        full_message = "How are you feeling today?"
+        bot.sendMessage(update.message.chat_id, text=full_message)
+    elif current_state == "input_feeling":
         change_attribute(str(chat_id), "state", "input_weight")
         change_attribute(str(chat_id), "feeling", text)
         full_message = "What's your weight today?"
         bot.sendMessage(update.message.chat_id, text=full_message)
     elif current_state == "input_weight":
-        change_attribute(str(chat_id), "state", "input_memo")
-        change_attribute(str(chat_id), "weight", text)
-        full_message = "Leave some comments on your photo!"
-        bot.sendMessage(update.message.chat_id, text=full_message)
+        if "kg" in text:
+            print("kg was selected")
+            weight_number = re.sub("\D", "", text)
+            weight_number = 2.20462 * float(weight_number)
+            change_attribute(str(chat_id), "state", "input_memo")
+            change_attribute(str(chat_id), "weight", str(weight_number))
+            full_message = "Leave some comments on your photo!"
+            bot.sendMessage(update.message.chat_id, text=full_message)
+        elif "lb" in text:
+            print("lb was selected")
+            change_attribute(str(chat_id), "state", "input_memo")
+            change_attribute(str(chat_id), "weight", re.sub("\D", "", text))
+            full_message = "Leave some comments on your photo!"
+            bot.sendMessage(update.message.chat_id, text=full_message)
+        else:
+            change_attribute(str(chat_id), "weight", re.sub("\D", "", text))
+            change_attribute(str(chat_id), "state", "input_weight_unit")
+            full_message = "is that in kg or lbs?"
+            bot.sendMessage(update.message.chat_id, text=full_message)
+    elif current_state == "input_weight_unit":
+        if "kg" in text:
+            print("kg was selected")
+            firebase_object = firebase.get('/users/' + str(chat_id), None)
+            weight_number = firebase_object.get('weight')
+            weight_number = 2.20462 * float(weight_number)
+            change_attribute(str(chat_id), "state", "input_memo")
+            change_attribute(str(chat_id), "weight", str(weight_number))
+            full_message = "Leave some comments on your photo!"
+            bot.sendMessage(update.message.chat_id, text=full_message)
+        elif "lb" in text:
+            print("lb was selected")
+            change_attribute(str(chat_id), "state", "input_memo")
+            full_message = "Leave some comments on your photo!"
+            bot.sendMessage(update.message.chat_id, text=full_message)
+        else:
+            full_message = "I didn't quite understand that, is that in kg or lbs?"
+            bot.sendMessage(update.message.chat_id, text=full_message)
+            return
     elif current_state == "input_memo":
         change_attribute(str(chat_id), "state", "input_tags")
         change_attribute(str(chat_id), "memo", text)
@@ -188,7 +246,7 @@ def filter_image(bot, update):
 
     bot.sendPhoto(update.message.chat_id,
                   photo=open(chat_id+'/download.jpg', 'rb'),
-                  caption=('...and, here\'s your image inverted.'))
+                  caption=('This is just to make sure we properly received your image'))
     return
 
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchImages } from '../actions/index';
-import {Link} from 'react-router';
+import { Link } from 'react-router';
 
 class Home extends React.Component {
   componentWillmount() {
@@ -10,7 +10,7 @@ class Home extends React.Component {
   }
 
   renderImages() {
-    return this.props.livewell.map((livewell) => {
+    return this.props.livewells.map((livewell) => {
       return (
         <div className="form-group col-sm-6 col-md-4">
           <div classname="thumbnail">
@@ -35,4 +35,8 @@ class Home extends React.Component {
   }
 }
 
-export default Home;
+function mapStateToProps(state) {
+  return { livewells: state.livewells.all };
+}
+
+export default connect(mapStateToProps, { fetchImages })(Home);

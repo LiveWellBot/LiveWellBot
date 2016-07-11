@@ -42,7 +42,7 @@ function fetchImage(id) {
 
 function putImage(props) {
   var id = livewell.params._id;
-  var request = _axios2.default.patch(ROOT_URL + '/livewell/' + id + API_KEY, props);
+  var request = _axios2.default.put(ROOT_URL + '/livewell/' + id + API_KEY, props);
 
   return {
     type: PUT_IMAGE,
@@ -206,7 +206,7 @@ var Home = function (_React$Component) {
   }, {
     key: 'renderImages',
     value: function renderImages() {
-      return this.props.livewell.map(function (livewell) {
+      return this.props.livewells.map(function (livewell) {
         return _react2.default.createElement(
           'div',
           { className: 'form-group col-sm-6 col-md-4' },
@@ -258,7 +258,11 @@ var Home = function (_React$Component) {
   return Home;
 }(_react2.default.Component);
 
-exports.default = Home;
+function mapStateToProps(state) {
+  return { livewells: state.livewells.all };
+}
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps, { fetchImages: _index.fetchImages })(Home);
 
 },{"../actions/index":1,"react":"react","react-redux":51,"react-router":"react-router"}],5:[function(require,module,exports){
 'use strict';

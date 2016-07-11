@@ -7,6 +7,6 @@ import ImageUpload from './components/ImageUpload';
 export default (
   <Route path="/" component={App}>
     <IndexRoute component={ImageUpload} />
-    <Route path="/pictures" component={Home} />
+    <Route path="livewells" component={Home} />
   </Route>
 );

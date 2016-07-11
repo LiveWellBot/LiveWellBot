@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux';
-import LivewellReducer from './reducer_livewell';
+import LivewellsReducer from './reducer_livewells';
+import { reducer as formReducer } from 'redux-form';
 
-const rootReducer = combineReducers ({
-  livewell: LivewellReducer
+const rootReducer = combineReducers({
+  livewells: LivewellsReducer,
+  form: formReducer
 });
 
 export default rootReducer;

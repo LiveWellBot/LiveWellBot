@@ -1,5 +1,7 @@
-import React, { Component } from "react";
+import React, { Component, PropTypes } from "react";
 import { Link } from 'react-router';
+import { putImage } from '../actions/index';
+import { reduxForm } from 'redux-form';
 
 class ImageUpload extends Component {
   constructor(props) {
@@ -7,9 +9,9 @@ class ImageUpload extends Component {
 
   this.state = {file: '',imagePreviewUrl: ''};
   }
+
   _handleSubmit(e) {
   e.preventDefault();
-  // TODO: do something with -> this.state.file
   console.log('handle uploading-', this.state.file);
   }
 
@@ -56,7 +58,7 @@ class ImageUpload extends Component {
                <div className="imgPreview">
                  {_imagePreview}
                </div>
-               <Link to="/pictures" type='submit' className='btn btn-primary pull-right'>See Pictures</Link>
+               <Link to="/livewells" type='submit' className='btn btn-primary pull-right'>See Pictures</Link>
              </div>
            </div>
          </div>

@@ -5,10 +5,9 @@ export const FETCH_IMAGE = 'FETCH_IMAGE';
 export const PUT_IMAGE = 'UPDATE_IMAGE';
 
 const ROOT_URL = 'localhost:3000/api';
-const API_KEY = '?key=helloworld';
 
 export function fetchImages(id) {
-  const request = axios.get(`${ROOT_URL}/livewell/${id}${API_KEY}`);
+  const request = axios.get(`${ROOT_URL}/livewell/${id}`);
 
   return {
     type: FETCH_PICTURES,
@@ -17,7 +16,7 @@ export function fetchImages(id) {
 }
 
 export function fetchImage(id) {
-  const request = axios.get(`${ROOT_URL}/livewell/${id}${API_KEY}`);
+  const request = axios.get(`${ROOT_URL}/livewell/${id}`);
 
   return {
     type: FETCH_PICTURE,
@@ -27,7 +26,7 @@ export function fetchImage(id) {
 
 export function putImage(props) {
   const id = livewell.params._id;
-  const request = axios.patch(`${ROOT_URL}/livewell/${id}${API_KEY}`, props);
+  const request = axios.put(`${ROOT_URL}/livewell/${id}`, props);
 
   return {
     type: PUT_IMAGE,
