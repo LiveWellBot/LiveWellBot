@@ -16,7 +16,7 @@ unless Heroku dies, it shall not.
 import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ForceReply, ReplyKeyboardMarkup, KeyboardButton
-from flask import Flask, request
+from flask import Flask, request, Response
 import os
 from PIL import Image, ImageFilter, ImageOps
 import logging
@@ -25,6 +25,11 @@ from firebase import firebase
 import requests
 import json
 import re
+
+from kik import KikApi, Configuration
+from kik.messages import messages_from_json, TextMessage
+
+kik = KikApi(os.environ['KIK_BOT_USERNAME'], os.environ['KIK_BOT_API_KEY'])
 
 # Firebase is used to track user state and information
 firebase_db = os.environ['FIREBASE_DB']
