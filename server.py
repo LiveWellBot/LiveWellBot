@@ -30,6 +30,7 @@ from kik import KikApi, Configuration
 from kik.messages import messages_from_json, TextMessage
 
 kik = KikApi(os.environ['KIK_BOT_USERNAME'], os.environ['KIK_BOT_API_KEY'])
+kik.set_configuration(Configuration(webhook=os.environ['KIK_BOT_WEBHOOK']))
 
 # Firebase is used to track user state and information
 firebase_db = os.environ['FIREBASE_DB']
@@ -51,6 +52,26 @@ filters = {
     'smooth': ImageFilter.SMOOTH,
     'smooth_more': ImageFilter.SMOOTH_MORE
 }
+
+
+@app.route('/incoming', methods=['POST'])
+def incoming():
+    if not kik.verify_signature(request.headers.get('X-Kik-Signature'), request.get_data()):
+        return Response(status=403)
+
+    messages = messages_from_json(request.json['messages'])
+
+    for message in messages:
+        if isinstance(message, TextMessage):
+            kik.send_messages([
+                TextMessage(
+                    to=message.from_user,
+                    chat_id=message.chat_id,
+                    body=message.body
+                )
+            ])
+
+    return Response(status=200)
 
 
 @app.route('/HOOK', methods=['POST'])
