@@ -23,7 +23,6 @@ from PIL import Image, ImageFilter, ImageOps
 import logging
 import sendgrid
 from firebase import firebase
-import requests
 import json
 import re
 
