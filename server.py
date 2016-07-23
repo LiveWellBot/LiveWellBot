@@ -30,7 +30,7 @@ from kik import KikApi, Configuration
 from kik.messages import messages_from_json, TextMessage
 
 kik = KikApi(os.environ['KIK_BOT_USERNAME'], os.environ['KIK_BOT_API_KEY'])
-kik.set_configuration(Configuration(webhook=os.environ['KIK_BOT_WEBHOOK']))
+kik.set_configuration(Configuration(webhook='https://damp-castle-40734.herokuapp.com/incoming'))
 
 # Firebase is used to track user state and information
 firebase_db = os.environ['FIREBASE_DB']
