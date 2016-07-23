@@ -17,6 +17,7 @@ import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from telegram import ForceReply, ReplyKeyboardMarkup, KeyboardButton
 from flask import Flask, request, Response
+import requests
 import os
 from PIL import Image, ImageFilter, ImageOps
 import logging
@@ -148,9 +149,26 @@ def webhook_handler():
 def set_webhook():
     s = bot.setWebhook('https://damp-castle-40734.herokuapp.com/HOOK')
     if s:
-        return "webhook setup ok"
+        return "telegram webhook setup ok"
     else:
-        return "webhook setup failed"
+        return "telegram webhook setup failed"
+
+    r = requests.post(
+        'https://api.kik.com/v1/config',
+        auth=(os.environ['KIK_BOT_USERNAME'], os.environ['KIK_BOT_API_KEY']),
+        headers={
+            'Content-Type': 'application/json'
+        },
+        data=json.dumps({
+            "webhook": "https://example.com/incoming",
+            "features": {
+                "manuallySendReadReceipts": False,
+                "receiveReadReceipts": False,
+                "receiveDeliveryReceipts": False,
+                "receiveIsTyping": False
+            }
+        })
+    )
 
 
 def change_attribute(subject, key, value):
