@@ -62,6 +62,9 @@ def incoming():
     messages = messages_from_json(request.json['messages'])
 
     for message in messages:
+        current_state = None
+        first_chat = None
+
         if isinstance(message, TextMessage):
             kik.send_messages([
                 TextMessage(
@@ -89,32 +92,7 @@ def webhook_handler():
         update = telegram.Update.de_json(request.get_json(force=True))
         chat_id = update.message.chat.id
 
-        current_state = None
-        first_chat = None
-        try:
-            firebase_dict = firebase.get('/users/' + str(chat_id), None)
-            for k, v in firebase_dict.iteritems():
-                if k == "state":
-                    current_state = v
-                elif k == "first_chat":
-                    first_chat = v
-            print "THIS IS THE CURRENT STATE"
-            print current_state
-            print "THIS IS THE FIRST_CHAT STATUS"
-            print first_chat
-        except Exception as e:
-            print "FAILURE TO ASSIGN STATE"
-            print current_state
-            print first_chat
-            print str(e)
-        print update.message
-        print update.message.text.encode('utf-8')
-        print update.message.photo
-        print "-----------------"
-        print "-----------------"
-        print "-----------------"
-        print "-----------------"
-        print "-----------------"
+        current_state, first_chat = assign_state_first_chat(chat_id)
 
         # Telegram understands UTF-8, so encode text for unicode compatibility
         text = update.message.text.encode('utf-8')
@@ -337,6 +315,28 @@ def echo(bot, update):
 @app.route('/')
 def index():
     return '.'
+
+
+def assign_state_first_chat(chat_id):
+    current_state = None
+    first_chat = None
+    try:
+        firebase_dict = firebase.get('/users/' + str(chat_id), None)
+        for k, v in firebase_dict.iteritems():
+            if k == "state":
+                current_state = v
+            elif k == "first_chat":
+                first_chat = v
+        print "THIS IS THE CURRENT STATE"
+        print current_state
+        print "THIS IS THE FIRST_CHAT STATUS"
+        print first_chat
+    except Exception as e:
+        print "FAILURE TO ASSIGN STATE"
+        print current_state
+        print first_chat
+        print str(e)
+    return (current_state, first_chat)
 
 if __name__ == "__main__":
     set_webhook()
