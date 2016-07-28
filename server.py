@@ -79,7 +79,7 @@ def incoming():
                 TextMessage(
                     to=message.from_user,
                     chat_id=message.chat_id,
-                    body=(current_state + "\t" + first_chat)
+                    body=(type(current_state) + "\t" + type(first_chat))
                 )
             ])
 
