@@ -74,11 +74,12 @@ def incoming():
                 )
             ])
         elif isinstance(message, PictureMessage):
+            current_state, first_chat = assign_state_first_chat(message.chat_id)
             kik.send_messages([
                 TextMessage(
                     to=message.from_user,
                     chat_id=message.chat_id,
-                    body="I received a picture"
+                    body=(current_state + "\t" + first_chat)
                 )
             ])
 
