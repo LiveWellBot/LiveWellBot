@@ -122,13 +122,7 @@ def webhook_handler():
             handle_text(text, update, current_state, chat_id, first_chat)
             # handle_command(text_array[0], update)
         elif photo:
-            try:
-                change_attribute(str(chat_id), "chat_id", str(chat_id))
-                change_attribute(str(chat_id), "state", "input_feeling")
-                firebase_object = firebase.get('/users/' + str(chat_id), None)
-                first_chat = firebase_object.get('first_chat')
-            except Exception as e:
-                print str(e)
+            firebase_object, first_chat = check_for_first_chat(chat_id)
             filter_image(bot, update)
             print("first_chat???")
             print(first_chat)
@@ -354,6 +348,18 @@ def assign_state_first_chat(chat_id):
         print first_chat
         print str(e)
     return (current_state, first_chat)
+
+
+def check_for_first_chat(chat_id):
+    try:
+        change_attribute(str(chat_id), "chat_id", str(chat_id))
+        change_attribute(str(chat_id), "state", "input_feeling")
+        firebase_object = firebase.get('/users/' + str(chat_id), None)
+        first_chat = firebase_object.get('first_chat')
+    except Exception as e:
+        print str(e)
+    return (firebase_object, first_chat)
+
 
 if __name__ == "__main__":
     set_webhook()
