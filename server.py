@@ -75,11 +75,27 @@ def incoming():
             ])
         elif isinstance(message, PictureMessage):
             current_state, first_chat = assign_state_first_chat(message.chat_id)
+            if (current_state):
+                kik.send_messages([
+                    TextMessage(
+                        to=message.from_user,
+                        chat_id=message.chat_id,
+                        body="current_state has been assigned"
+                    )
+                ])
+            else:
+                kik.send_messages([
+                    TextMessage(
+                        to=message.from_user,
+                        chat_id=message.chat_id,
+                        body="current_state is empty"
+                    )
+                ])
             kik.send_messages([
                 TextMessage(
                     to=message.from_user,
                     chat_id=message.chat_id,
-                    body=(type(current_state) + "\t" + type(first_chat))
+                    body="I have received an image"
                 )
             ])
 
