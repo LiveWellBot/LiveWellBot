@@ -27,7 +27,7 @@ import json
 import re
 
 from kik import KikApi, Configuration
-from kik.messages import messages_from_json, TextMessage
+from kik.messages import messages_from_json, TextMessage, PictureMessage
 
 kik = KikApi(os.environ['KIK_BOT_USERNAME'], os.environ['KIK_BOT_API_KEY'])
 kik.set_configuration(Configuration(webhook='https://damp-castle-40734.herokuapp.com/incoming'))
@@ -62,13 +62,20 @@ def incoming():
     messages = messages_from_json(request.json['messages'])
 
     for message in messages:
-        print(message.text)
         if isinstance(message, TextMessage):
             kik.send_messages([
                 TextMessage(
                     to=message.from_user,
                     chat_id=message.chat_id,
                     body=message.body
+                )
+            ])
+        elif isinstance(message, PictureMessage):
+            kik.send_messages([
+                TextMessage(
+                    to=message.from_user,
+                    chat_id=message.chat_id,
+                    body="I received a picture"
                 )
             ])
 
