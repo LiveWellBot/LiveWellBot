@@ -62,7 +62,7 @@ def incoming():
     messages = messages_from_json(request.json['messages'])
 
     for message in messages:
-        print(message)
+        print(message.text)
         if isinstance(message, TextMessage):
             kik.send_messages([
                 TextMessage(
