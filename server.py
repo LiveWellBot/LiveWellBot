@@ -124,16 +124,12 @@ def webhook_handler():
         elif photo:
             firebase_object, first_chat = check_for_first_chat(chat_id)
             filter_image(bot, update)
-            print("first_chat???")
-            print(first_chat)
             if first_chat is None:
-                change_attribute(str(chat_id), "first_chat", True)
-                change_attribute(str(chat_id), "state", "input_wake")
                 full_message = ("It looks like this is your first time talking with"
                                 "me! To help us give you a better idea of how you"
                                 "are feeling from day to day, can you tell us when"
                                 "You wake up?")
-                bot.sendMessage(update.message.chat_id, text=full_message)
+                update_state_attrb(chat_id, "input_wake", "first_chat", True, full_message)
             else:
                 change_attribute(str(chat_id), "first_chat", False)
                 full_message = "How are you feeling today?"
@@ -359,6 +355,12 @@ def check_for_first_chat(chat_id):
     except Exception as e:
         print str(e)
     return (firebase_object, first_chat)
+
+
+def update_state_attrb(chat_id, new_state, attribute, payload, full_msg):
+    change_attribute(str(chat_id), "state", new_state)
+    change_attribute(str(chat_id), attribute, payload)
+    bot.sendMessage(chat_id, text=full_msg)
 
 
 if __name__ == "__main__":
