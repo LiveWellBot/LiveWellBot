@@ -202,10 +202,9 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
             firebase_object = firebase.get('/users/' + str(chat_id), None)
             weight_number = firebase_object.get('weight')
             weight_number = 2.20462 * float(weight_number)
-            change_attribute(str(chat_id), "state", "input_memo")
-            change_attribute(str(chat_id), "weight", str(weight_number))
-            full_message = "Leave some comments on your photo!"
-            bot.sendMessage(update.message.chat_id, text=full_message)
+            full_msg = "Leave some comments on your photo!"
+            update_state_attrb(chat_id, "input_memo", "weight",
+                               str(weight_number), full_msg)
         elif "lb" in text:
             print("lb was selected")
             change_attribute(str(chat_id), "state", "input_memo")
@@ -216,10 +215,8 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
             bot.sendMessage(update.message.chat_id, text=full_message)
             return
     elif current_state == "input_memo":
-        change_attribute(str(chat_id), "state", "input_tags")
-        change_attribute(str(chat_id), "memo", text)
-        full_message = "Leave some tags on this photo!"
-        bot.sendMessage(update.message.chat_id, text=full_message)
+        full_msg = "Leave some tags on this photo!"
+        update_state_attrb(chat_id, "input_tags", "memo", text, full_msg)
     elif current_state == "input_tags":
         change_attribute(str(chat_id), "state", "complete")
         change_attribute(str(chat_id), "tags", text.split())
