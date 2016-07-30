@@ -173,15 +173,12 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
         full_msg = "What time do you usually go to sleep?"
         update_state_attrb(chat_id, "input_sleep", "time_wake", text, full_msg)
     elif current_state == "input_sleep":
-        change_attribute(str(chat_id), "state", "input_feeling")
-        change_attribute(str(chat_id), "time_sleep", text)
-        full_message = "How are you feeling today?"
-        bot.sendMessage(update.message.chat_id, text=full_message)
+        full_msg = "How are you feeling today?"
+        update_state_attrb(chat_id, "input_feeling", "time_sleep", text,
+                           full_msg)
     elif current_state == "input_feeling":
-        change_attribute(str(chat_id), "state", "input_weight")
-        change_attribute(str(chat_id), "feeling", text)
-        full_message = "What's your weight today?"
-        bot.sendMessage(update.message.chat_id, text=full_message)
+        full_msg = "What's your weight today?"
+        update_state_attrb(chat_id, "input_weight", "feeling", text, full_msg)
     elif current_state == "input_weight":
         if "kg" in text:
             print("kg was selected")
