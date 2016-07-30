@@ -125,11 +125,12 @@ def webhook_handler():
             firebase_object, first_chat = check_for_first_chat(chat_id)
             filter_image(bot, update)
             if first_chat is None:
-                full_message = ("It looks like this is your first time talking with"
-                                "me! To help us give you a better idea of how you"
-                                "are feeling from day to day, can you tell us when"
-                                "You wake up?")
-                update_state_attrb(chat_id, "input_wake", "first_chat", True, full_message)
+                full_message = ("It looks like this is your first time "
+                                "talking with me! To help us give you a "
+                                "better idea of how you are feeling from day "
+                                "to day, can you tell us when you wake up?")
+                update_state_attrb(chat_id, "input_wake", "first_chat",
+                                   True, full_message)
             else:
                 change_attribute(str(chat_id), "first_chat", False)
                 full_message = "How are you feeling today?"
@@ -169,10 +170,8 @@ def change_attribute(subject, key, value):
 
 def handle_text(text, update, current_state=None, chat_id=None, first_chat=None):
     if current_state == "input_wake":
-        change_attribute(str(chat_id), "state", "input_sleep")
-        change_attribute(str(chat_id), "time_wake", text)
-        full_message = "What time do you usually go to sleep?"
-        bot.sendMessage(update.message.chat_id, text=full_message)
+        full_msg = "What time do you usually go to sleep?"
+        update_state_attrb(chat_id, "input_sleep", "time_wake", text, full_msg)
     elif current_state == "input_sleep":
         change_attribute(str(chat_id), "state", "input_feeling")
         change_attribute(str(chat_id), "time_sleep", text)
