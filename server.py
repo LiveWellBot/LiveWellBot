@@ -184,21 +184,18 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
             print("kg was selected")
             weight_number = re.sub("\D", "", text)
             weight_number = 2.20462 * float(weight_number)
-            change_attribute(str(chat_id), "state", "input_memo")
-            change_attribute(str(chat_id), "weight", str(weight_number))
-            full_message = "Leave some comments on your photo!"
-            bot.sendMessage(update.message.chat_id, text=full_message)
+            full_msg = "Leave some comments on your photo!"
+            update_state_attrb(chat_id, "input_memo", "weight",
+                               str(weight_number), full_msg)
         elif "lb" in text:
             print("lb was selected")
-            change_attribute(str(chat_id), "state", "input_memo")
-            change_attribute(str(chat_id), "weight", re.sub("\D", "", text))
-            full_message = "Leave some comments on your photo!"
-            bot.sendMessage(update.message.chat_id, text=full_message)
+            full_msg = "Leave some comments on your photo!"
+            update_state_attrb(chat_id, "input_memo", "weight",
+                               re.sub("\D", "", text), full_msg)
         else:
-            change_attribute(str(chat_id), "weight", re.sub("\D", "", text))
-            change_attribute(str(chat_id), "state", "input_weight_unit")
-            full_message = "is that in kg or lbs?"
-            bot.sendMessage(update.message.chat_id, text=full_message)
+            full_msg = "is that in kg or lbs?"
+            update_state_attrb(chat_id, "input_weight_unit", "weight",
+                               re.sub("\D", "", text), full_msg)
     elif current_state == "input_weight_unit":
         if "kg" in text:
             print("kg was selected")
