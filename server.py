@@ -56,6 +56,12 @@ filters = {
 
 @app.route('/incoming', methods=['POST'])
 def incoming():
+    """
+    Handle all webhook calls from the Kik API to this server.
+
+    This function is basically the very first communication point with any
+    information or requests coming from the Kik API.
+    """
     if not kik.verify_signature(request.headers.get('X-Kik-Signature'), request.get_data()):
         return Response(status=403)
 
@@ -104,6 +110,12 @@ def incoming():
 
 @app.route('/HOOK', methods=['POST'])
 def webhook_handler():
+    """
+    Handle all webhook calls from the Telegram API to this server.
+
+    This function is basically the very first communication point with any
+    information or requests coming from the Telegram API.
+    """
     if request.method == "POST":
         # retrieve the message in JSON and then transform it to Telegram object
         update = telegram.Update.de_json(request.get_json(force=True))
@@ -128,13 +140,20 @@ def webhook_handler():
 
 # @app.route('/set_webhook', methods=['GET', 'POST'])
 def set_webhook():
+    """
+    Perform this at the very beginning when you initialize your bot.
+
+    This function performs the very first initialization of the bot, you
+    really only have to run it once during the entire lifecycle of the bot,
+    without this the bot will not connected.
+    """
     s = bot.setWebhook('https://damp-castle-40734.herokuapp.com/HOOK')
     if s:
         return "telegram webhook setup ok"
     else:
         return "telegram webhook setup failed"
 
-    r = requests.post(
+    requests.post(
         'https://api.kik.com/v1/config',
         auth=(os.environ['KIK_BOT_USERNAME'], os.environ['KIK_BOT_API_KEY']),
         headers={
@@ -153,6 +172,12 @@ def set_webhook():
 
 
 def change_attribute(subject, key, value):
+    """
+    Reach out to Firebase and change a generic attribute.
+
+    This function is pretty straightforward, it simple swaps out some firebase
+    attributes, used quite often.
+    """
     firebase.patch('/users/' + subject + '/', data={key: value})
 
 
