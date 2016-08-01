@@ -277,6 +277,12 @@ def filter_image(bot, update):
 
 
 def create_img_payload(chat_id):
+    """
+    Generate the database entry that will be sent to our MongoDB backend.
+
+    This function directly communicates with our MongoDB backend so that we
+    can store the photos and statuses for each user.
+    """
     firebase_dict = firebase.get('/users/' + str(chat_id), None)
     for k, v in firebase_dict.iteritems():
         key = k
@@ -311,10 +317,23 @@ def echo(bot, update):
 
 @app.route('/')
 def index():
+    """
+    Test the server to make sure it has not totally crashed.
+
+    This function is just a quick check to maker sure that the server is still
+    alive.
+    """
     return '.'
 
 
 def assign_state_first_chat(chat_id):
+    """
+    Assign values to the user's current_state and first_chat status.
+
+    This function should reach out to Firebase and assign current_state and
+    first_chat, basically this is the first step in the long chain of if else
+    statements, different logic based on these two variables.
+    """
     current_state = None
     first_chat = None
     try:
@@ -337,6 +356,16 @@ def assign_state_first_chat(chat_id):
 
 
 def check_for_first_chat(chat_id):
+    """
+    Check Firebase to see whether or not this is the user's first time.
+
+    This function should reach out to Firebase to check whether or not the
+    user has talked to this bot before, if this is the user's first time, we
+    need to collect data about when they wake up and when they go to sleep,
+    this is in order to implement automatic reminders throughout the day or
+    to ping the user for information a few times throughout the day for more
+    accurate health tracking.
+    """
     try:
         change_attribute(str(chat_id), "chat_id", str(chat_id))
         change_attribute(str(chat_id), "state", "input_feeling")
@@ -348,6 +377,12 @@ def check_for_first_chat(chat_id):
 
 
 def update_state_attrb(chat_id, new_state, attribute, payload, full_msg):
+    """
+    Handle updating the user state, updating an attribute, and sending a msg.
+
+    This function should reach out to Firebase, make changes to the current
+    user state, change a specific attribute, and send back a response.
+    """
     change_attribute(str(chat_id), "state", new_state)
     change_attribute(str(chat_id), attribute, payload)
     bot.sendMessage(chat_id, text=full_msg)
