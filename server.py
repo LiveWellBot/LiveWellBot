@@ -122,19 +122,7 @@ def webhook_handler():
             handle_text(text, update, current_state, chat_id, first_chat)
             # handle_command(text_array[0], update)
         elif photo:
-            firebase_object, first_chat = check_for_first_chat(chat_id)
-            filter_image(bot, update)
-            if first_chat is None:
-                full_message = ("It looks like this is your first time "
-                                "talking with me! To help us give you a "
-                                "better idea of how you are feeling from day "
-                                "to day, can you tell us when you wake up?")
-                update_state_attrb(chat_id, "input_wake", "first_chat",
-                                   True, full_message)
-            else:
-                change_attribute(str(chat_id), "first_chat", False)
-                full_message = "How are you feeling today?"
-                bot.sendMessage(update.message.chat_id, text=full_message)
+            process_first_chat(chat_id, update)
     return 'ok'
 
 
@@ -374,6 +362,22 @@ def check_for_first_chat(chat_id):
     except Exception as e:
         print str(e)
     return (firebase_object, first_chat)
+
+
+def process_first_chat(chat_id, update):
+    firebase_object, first_chat = check_for_first_chat(chat_id)
+    filter_image(bot, update)
+    if first_chat is None:
+        full_message = ("It looks like this is your first time "
+                        "talking with me! To help us give you a "
+                        "better idea of how you are feeling from day "
+                        "to day, can you tell us when you wake up?")
+        update_state_attrb(chat_id, "input_wake", "first_chat",
+                           True, full_message)
+    else:
+        change_attribute(str(chat_id), "first_chat", False)
+        full_message = "How are you feeling today?"
+        bot.sendMessage(update.message.chat_id, text=full_message)
 
 
 def update_state_attrb(chat_id, new_state, attribute, payload, full_msg):
