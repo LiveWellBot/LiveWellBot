@@ -24,3 +24,6 @@ data = {"text": "great"}
 files = buff
 r = requests.post(url, data=data, stream=False, files=buff)
 print(r.text)
+json_response = json.loads(r.text)
+print(json_response)
+print(json_response['label'])

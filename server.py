@@ -249,8 +249,11 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
             url = "http://text-processing.com/api/sentiment/"
             data = {"text": "great"}
             r = requests.post(url, data=data, stream=False, files=buff)
-            feeling = r.text.label
             print(r.text)
+            json_response = json.loads(r.text)
+            print(json_response)
+            print(json_response['label'])
+            feeling = json_response['label']
         except Exception as e:
             print(e)
         print(r)
