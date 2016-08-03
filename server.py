@@ -240,6 +240,13 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
         update_state_attrb(chat_id, "input_feeling", "time_sleep", text,
                            full_msg)
     elif current_state == "input_feeling":
+        try:
+            payload = {'text': text}
+            r = requests.post("http://text-processing.com/api/sentiment/",
+                               data=json.dumps(payload))
+        except Exception as e:
+            print(e) 
+        print(r)
         full_msg = "What's your weight today?"
         update_state_attrb(chat_id, "input_weight", "feeling", text, full_msg)
     elif current_state == "input_weight":
