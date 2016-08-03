@@ -26,6 +26,8 @@ from firebase import firebase
 import json
 import re
 
+import nltk
+
 from kik import KikApi, Configuration
 from kik.messages import messages_from_json, TextMessage, PictureMessage
 
@@ -41,6 +43,8 @@ app = Flask(__name__)
 global bot
 bot = telegram.Bot(token=os.environ['TELEGRAM_KEY'])
 
+# http://www.laurentluce.com/posts/twitter-sentiment-analysis-using-python-and-nltk/
+
 filters = {
     'blur': ImageFilter.BLUR,
     'contour': ImageFilter.CONTOUR,
@@ -53,6 +57,52 @@ filters = {
     'smooth_more': ImageFilter.SMOOTH_MORE
 }
 
+pos_tweets = [
+    ('I love this car', 'positive'),
+    ('This view is amazing', 'positive'),
+    ('I feel great this morning', 'positive'),
+    ('I am so excited about the concert', 'positive'),
+    ('He is my best friend', 'positive')]
+
+neg_tweets = [
+    ('I do not like this car', 'negative'),
+    ('This view is horrible', 'negative'),
+    ('I feel tired this morning', 'negative'),
+    ('I am not looking forward to the concert', 'negative'),
+    ('He is my enemy', 'negative')]
+
+tweets = []
+for (words, sentiment) in pos_tweets + neg_tweets:
+    words_filtered = [e.lower() for e in words.split() if len(e) >= 3]
+    tweets.append((words_filtered, sentiment))
+
+
+def get_words_in_tweets(tweets):
+    """
+    Split each input tweet into its consituent words.
+
+    This function is a simple helper function designed to extract a list of
+    words.
+    """
+    all_words = []
+    for (words, sentiment) in tweets:
+        all_words.extend(words)
+    return all_words
+
+
+def get_word_features(wordlist):
+    """
+    Return a list of words with their associated frequency.
+
+    This function is will return a list matching a word key to its frequency
+    value.
+    """
+    wordlist = nltk.FreqDist(wordlist)
+    word_features = wordlist.keys()
+    return word_features
+
+
+word_features = get_word_features(get_words_in_tweets(tweets))
 
 @app.route('/incoming', methods=['POST'])
 def incoming():

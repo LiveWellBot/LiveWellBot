@@ -40,3 +40,4 @@ wcwidth==0.1.6
 websocket-client==0.37.0
 Werkzeug==0.11.10
 kik==1.1.0
+nltk==3.2.1
