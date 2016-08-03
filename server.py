@@ -25,11 +25,15 @@ import sendgrid
 from firebase import firebase
 import json
 import re
+from StringIO import StringIO
 
 import nltk
 
 from kik import KikApi, Configuration
 from kik.messages import messages_from_json, TextMessage, PictureMessage
+
+# create a buffer for form-encoded http requests (nltk sentiment)
+buff = StringIO("")
 
 kik = KikApi(os.environ['KIK_BOT_USERNAME'], os.environ['KIK_BOT_API_KEY'])
 kik.set_configuration(Configuration(webhook='https://damp-castle-40734.herokuapp.com/incoming'))
@@ -240,14 +244,23 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
         update_state_attrb(chat_id, "input_feeling", "time_sleep", text,
                            full_msg)
     elif current_state == "input_feeling":
+        feeling = "neutral"
         try:
-            payload = {'text': text}
-            r = requests.post("http://text-processing.com/api/sentiment/",
-                               data=json.dumps(payload))
+            url = "http://text-processing.com/api/sentiment/"
+            data = {"text": "great"}
+            r = requests.post(url, data=data, stream=False, files=buff)
+            feeling = r.text.label
+            print(r.text)
         except Exception as e:
-            print(e) 
+            print(e)
         print(r)
-        full_msg = "What's your weight today?"
+        if (feeling == "neutral"):
+            full_msg = "I see, I see..."
+        elif (feeling == "pos"):
+            full_msg = "Great! Glad to hear it! "
+        elif (feeling == "neg"):
+            full_msg = "Oh no! I'm sorry to hear that..."
+        full_msg += "What's your weight today?"
         update_state_attrb(chat_id, "input_weight", "feeling", text, full_msg)
     elif current_state == "input_weight":
         if "kg" in text:

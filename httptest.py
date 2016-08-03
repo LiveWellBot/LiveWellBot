@@ -15,23 +15,12 @@ unless Heroku dies, it shall not.
 
 import requests
 import json
+from StringIO import StringIO
 
+buff = StringIO("")
 
-r = requests.post(
-    'https://api.kik.com/v1/config',
-    auth=('livewellbot', 'd3c76643-953b-428b-b819-172dc2ded7b8'),
-    headers={
-        'Content-Type': 'application/json'
-    },
-    data=json.dumps({
-        "webhook": "https://example.com/incoming",
-        "features": {
-            "manuallySendReadReceipts": False,
-            "receiveReadReceipts": False,
-            "receiveDeliveryReceipts": False,
-            "receiveIsTyping": False
-        }
-    })
-)
-
-print(r)
+url = "http://text-processing.com/api/sentiment/"
+data = {"text": "great"}
+files = buff
+r = requests.post(url, data=data, stream=False, files=buff)
+print(r.text)
