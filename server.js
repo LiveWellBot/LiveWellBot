@@ -100,26 +100,19 @@ app.put('/api/livewell/:_id', upload.single('photo'), function(req, res) {
     Livewell.findById(req.params._id, function(err, livewell) {
         if (err) return res.status(500).json({ error: 'database failure' });
         if (!livewell) return res.status(404).json({ error: 'The id not found' });
-
-            // var imageObj = { 
-            //   data: "./public/life.png",
-            //   contentType: "image/png",
-            //   feeling: "testing"
-            //    };
-
-        // livewell.images.push(imageObj);
-        //     newImage.images.upload_date = req.body.images.upload_date;
-        //     newImage.images.weight = req.body.images.weight;
-        //     newImage.images.memo = req.body.images.memo;
-        //     newImage.images.tags = req.body.images.tags;
-        //     
-        var tmp_path = req.file.path;
-        var target_path = 'uploads/' + req.file.originalname;
         
-        console.log("Body: ", req.body);
+        
+        var data = fs.readFileSync(req.file.path);
+        var imageObj = { data: data }
+        livewell.images.push(imageObj);
+        
+        //     upload_date = req.body.images.upload_date;
+        //     weight = req.body.images.weight;
+        //     memo = req.body.images.memo;
+        //     tags = req.body.images.tags;
+        
         console.log("File: ", req.file);
-        console.log("Files: ", req.files);
-        console.log("Data: ", req.data);
+        console.log(data);
 
         livewell.save(function(err) {
             if (err) res.status(500).send(err);
