@@ -263,6 +263,9 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
             full_msg = "Great! Glad to hear it! "
         elif (feeling == "neg"):
             full_msg = "Oh no! I'm sorry to hear that..."
+
+        print(full_msg)
+
         full_msg += "What's your weight today?"
         update_state_attrb(chat_id, "input_weight", "feeling", text, full_msg)
     elif current_state == "input_weight":
