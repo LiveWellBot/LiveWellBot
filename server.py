@@ -247,7 +247,7 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
         feeling = "neutral"
         try:
             url = "http://text-processing.com/api/sentiment/"
-            data = {"text": "great"}
+            data = {"text": text}
             r = requests.post(url, data=data, stream=False, files=buff)
             print(r.text)
             json_response = json.loads(r.text)
