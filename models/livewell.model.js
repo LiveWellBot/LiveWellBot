@@ -13,7 +13,9 @@ var livewellSchema = new mongoose.Schema({
     feeling: String,
     memo: String,
     tags: [{ type: String }]
-  }]
+  }],
 });
+
+
 
 module.exports = mongoose.model('Livewell', livewellSchema);
