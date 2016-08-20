@@ -307,8 +307,11 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
         full_msg = "Leave some tags on this photo!\n"
         full_msg += "Here are some suggested tags:\n"
         try:
+            print("trying to open the file")
             files = {'file': open(chat_id+'/download.jpg', 'rb')}
+            print("successfully opened the file\n trying to add tags to msg")
             full_msg += create_tags(files)
+            print("successfully added tags to msg")
         except Exception as e:
             print(e)
         update_state_attrb(chat_id, "input_tags", "memo", text, full_msg)
