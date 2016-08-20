@@ -1,2 +1,3 @@
 ###LiveWellBot
-> **Hello world!**
+>  - **Hello world!**
+> - Reaching out to Microsoft Cognitive Services
