@@ -514,7 +514,7 @@ def create_tags(files):
     json_response = json.loads(r.text)
     print(json_response)
     print(json_response['description']['tags'])
-    return json_response['description']['tags']
+    return ', '.join(json_response['description']['tags'])
 
 
 if __name__ == "__main__":
