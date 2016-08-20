@@ -304,7 +304,13 @@ def handle_text(text, update, current_state=None, chat_id=None, first_chat=None)
             bot.sendMessage(update.message.chat_id, text=full_message)
             return
     elif current_state == "input_memo":
-        full_msg = "Leave some tags on this photo!"
+        full_msg = "Leave some tags on this photo!\n"
+        full_msg += "Here are some suggested tags:\n"
+        try:
+            files = {'file': open(chat_id+'/download.jpg', 'rb')}
+            full_msg += create_tags(files)
+        except Exception as e:
+            print(e)
         update_state_attrb(chat_id, "input_tags", "memo", text, full_msg)
     elif current_state == "input_tags":
         change_attribute(str(chat_id), "state", "complete")
@@ -491,6 +497,24 @@ def update_state_attrb(chat_id, new_state, attribute, payload, full_msg):
     change_attribute(str(chat_id), "state", new_state)
     change_attribute(str(chat_id), attribute, payload)
     bot.sendMessage(chat_id, text=full_msg)
+
+
+def create_tags(files):
+    """
+    Repeat any text message as this bot's default behavior.
+
+    This function only serves the purpose of making sure the bot is activated
+    """
+    url = "https://api.projectoxford.ai/vision/v1.0/describe?maxCandidates=1"
+    headers = {
+        "Ocp-Apim-Subscription-Key": os.environ['MICROSOFT_KEY']
+        }
+    r = requests.post(url, stream=False, headers=headers, files=files)
+    print(r.text)
+    json_response = json.loads(r.text)
+    print(json_response)
+    print(json_response['description']['tags'])
+    return json_response['description']['tags']
 
 
 if __name__ == "__main__":
